@@ -3,11 +3,7 @@ pipeline {
     tools{
         maven  'maven3'
     }
-    
-    environment{
-        SCANNER_HOME= tool 'sonarqube'
-    }
-    
+        
     stages {
         stage('Git Checkout') {
             steps {
