@@ -48,13 +48,36 @@ pipeline {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
                         
                         sh "docker build -t shopping-cart -f docker/Dockerfile ."
-                        sh "docker tag  shopping-cart praveen431ece/shopping-cart:latest"
-                        sh "docker push praveen431ece/shopping-cart:latest"
+                        sh "docker tag  shopping-cart praveen431ece/shopping-cart:${BUILD_NUMBER}"
+                        sh "docker push praveen431ece/shopping-cart:${BUILD_NUMBER}"
                     }
                 }
             }
         }
-        
-        
+
+        stage('Deploy to Kubernetes') {
+        environment {
+        // Define environment variables
+         DOCKER_REGISTRY = "docker.io" // Docker Hub registry URL
+         KUBE_NAMESPACE = "default"
+         KUBE_CLUSTER = "experimental-aks"
+         }
+        steps {
+          script {
+              sh '''
+                 BUILD_NUMBER=${BUILD_NUMBER}
+                 cd spring-boot-app
+                 pwd && ls -l
+                 sed -i "s/tagversion/${BUILD_NUMBER}/g" deploy-service.yaml
+                 echo "** Print the certificate **"
+                 echo "$kube"|base64 -d > /tmp/config
+                 kubectl apply -f  deploy-service.yaml --kubeconfig /tmp/config
+                 cat deploy-service.yaml
+                 sleep 30
+                 kubectl get pods -n cicd --kubeconfig /tmp/config
+              '''
+          }      
+        }
+    }
     }
 }
