@@ -29,13 +29,13 @@ pipeline {
         }
         
         stage('Sonarqube') {
+            environment {
+            SONAR_URL = "http://20.10.12.79:9000"
+           }
             steps {
-                withSonarQubeEnv('sonarqube'){
-                   sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Shopping-Cart \
-                   -Dsonar.java.binaries=. \
-                   -Dsonar.projectKey=Shopping-Cart '''
-               }
-            }
+            withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+             sh 'cd shopping-kart && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL} -Dsonar.java.binaries=. -Dsonar.projectKey=Shopping-Cart'
+             }
         }
         
         stage('Build') {
