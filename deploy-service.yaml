@@ -17,7 +17,7 @@ spec:
       - name: spring-boot-container
         image: praveen431ece/spring-boot:tagversion
         ports:
-        - containerPort: 8070
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -31,4 +31,4 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8070
+    targetPort: 8080
