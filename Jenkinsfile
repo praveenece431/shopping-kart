@@ -66,7 +66,6 @@ pipeline {
           script {
               sh '''
                  BUILD_NUMBER=${BUILD_NUMBER}
-                 cd spring-boot-app
                  pwd && ls -l
                  sed -i "s/tagversion/${BUILD_NUMBER}/g" deploy-service.yaml
                  echo "** Print the certificate **"
@@ -78,6 +77,7 @@ pipeline {
               '''
           }      
         }
-    }    
+    }   
+        
     }
 }
